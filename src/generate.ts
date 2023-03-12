@@ -2,7 +2,13 @@ import { GeneratorOptions } from '@prisma/generator-helper';
 import { ok } from 'assert';
 import AwaitEventEmitter from 'await-event-emitter';
 import { mapKeys } from 'lodash';
-import { Project, QuoteKind } from 'ts-morph';
+import {
+  CompilerOptions,
+  ModuleKind,
+  Project,
+  QuoteKind,
+  ScriptTarget,
+} from 'ts-morph';
 
 import { argsType } from './handlers/args-type';
 import { combineScalarFilters } from './handlers/combine-scalar-filters';
@@ -61,7 +67,15 @@ export async function generate(
     eventEmitter.emitSync('Warning', message);
   }
 
+  const compilerOptions: CompilerOptions = {
+    target: ScriptTarget.ES2019,
+    module: ModuleKind.CommonJS,
+    emitDecoratorMetadata: true,
+    experimentalDecorators: true,
+    esModuleInterop: true,
+  };
   const project = new Project({
+    compilerOptions,
     tsConfigFilePath: config.tsConfigFilePath,
     skipAddingFilesFromTsConfig: true,
     skipLoadingLibFiles: !config.emitCompiled,
